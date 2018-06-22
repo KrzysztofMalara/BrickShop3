@@ -11,7 +11,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -46,4 +47,26 @@ public class OrderControllerTest {
                 .andExpect(jsonPath("$", notNullValue()))
                 .andReturn();
     }
+
+
+    @Test
+    public void shouldGetSortedOrdersWithProperOrderReference() throws Exception {
+        // given - when
+        int brickCount1 = 100;
+        MvcResult result1 = performCreateOrder(brickCount1);
+        int brickCount2 = 200;
+        MvcResult result2 = performCreateOrder(brickCount2);
+
+        // then
+        String orderReferenceId1 = result1.getResponse().getContentAsString();
+        String orderReferenceId2 = result2.getResponse().getContentAsString();
+        mockMvc.perform(get(ORDERS_KRZYSZTOF)).andDo(print()).andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].orderReferenceId", is(orderReferenceId1)))
+                .andExpect(jsonPath("$[0].bricksCount", is(brickCount1)))
+                .andExpect(jsonPath("$[1].orderReferenceId", is(orderReferenceId2)))
+                .andExpect(jsonPath("$[1].bricksCount", is(brickCount2)));
+    }
+
+
 }

@@ -7,6 +7,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.List;
+
 import static junit.framework.TestCase.assertTrue;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,5 +32,26 @@ public class OrderServiceTest {
         //then
         assertThat(orderRereferenceId).isNotBlank();
         assertTrue(orderRereferenceId.length() > 0);
+    }
+
+    @Test
+    public void shouldGetCustomerOrders() {
+        //given
+        int brickCount1 = 100;
+        int brickCount2 = 200;
+        String orderReference1 = orderService.createOrder(USERNAME, brickCount1);
+        String orderReference2 = orderService.createOrder(USERNAME, brickCount2);
+
+        //when
+        List<OrderDTO> customerOrders = orderService.getCustomerOrders(USERNAME);
+
+        //then
+        assertOrder(customerOrders, brickCount1, orderReference1, 0);
+        assertOrder(customerOrders, brickCount2, orderReference2, 1);
+    }
+
+    private static void assertOrder(List<OrderDTO> customerOrders, int brickCount, String orderReference, int i) {
+        assertThat(customerOrders.get(i).getBricksCount()).isEqualTo(brickCount);
+        assertThat(customerOrders.get(i).getOrderReferenceId()).isEqualTo(orderReference);
     }
 }

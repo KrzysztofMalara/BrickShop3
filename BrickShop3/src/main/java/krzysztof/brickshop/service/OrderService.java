@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -20,6 +21,9 @@ public class OrderService {
 
     @Autowired
     private OrderDao orderDao;
+
+    @Autowired
+    private OrderToOrderDtoConverter orderConverter;
 
     public String createOrder(String customerName, int brickCount) {
 
@@ -36,6 +40,14 @@ public class OrderService {
     private Customer saveCustomer(String username) {
         Customer customer = new Customer(username);
         return customerDao.save(customer);
+    }
+
+    public List<OrderDTO> getCustomerOrders(String customerName) {
+        Customer customer = customerDao.findByName(customerName);
+        if (customer == null) {
+            throw new CustomerNotFoundException(customerName);
+        }
+        return orderConverter.convertToOrderJson(customer.getOrders());
     }
 
 }
