@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -20,17 +21,18 @@ public class OrderService {
     @Autowired
     private OrderDao orderDao;
 
-    public OrderDTO createOrder(String customerName, int brickCount)  {
+    public String createOrder(String customerName, int brickCount) {
 
         Customer customer = customerDao.findByName(customerName);
         if (customer == null) {
             customer = saveCustomer(customerName);
         }
 
-        Order order = new Order(brickCount, new Date().getTime());
+        Order order = new Order(brickCount, new Date().getTime(), UUID.randomUUID().toString(), customer);
         Order saved = orderDao.save(order);
-        return messageConverter.convertToMessageJson(saved);
+        return saved.getReferenceId();
     }
+
     private Customer saveCustomer(String username) {
         Customer customer = new Customer(username);
         return customerDao.save(customer);
