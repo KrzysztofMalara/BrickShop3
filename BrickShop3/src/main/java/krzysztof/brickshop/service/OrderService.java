@@ -50,4 +50,10 @@ public class OrderService {
         return orderConverter.convertToOrderJson(customer.getOrders());
     }
 
+    public String updateOrder(String referenceId, int brickCount) {
+        Order order = orderDao.findByReferenceId(referenceId);
+        order.setBrickCount(brickCount);
+        orderDao.save(order);
+        return referenceId;
+    }
 }

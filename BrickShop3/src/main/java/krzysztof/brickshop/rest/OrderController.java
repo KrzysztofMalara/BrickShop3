@@ -11,18 +11,23 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/orders/{username}")
+@RequestMapping("/orders")
 public class OrderController {
     @Autowired
     private OrderService orderService;
 
-    @RequestMapping(method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "/{username}", method = RequestMethod.POST, produces = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
     public String createOrder(@PathVariable String username, @RequestBody String content) {
         return orderService.createOrder(username, Integer.parseInt(content));
     }
 
-    @RequestMapping(method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/{referenceId}", method = RequestMethod.PUT, produces = "application/json")
+    public String updateOrder(@PathVariable String referenceId, @RequestBody String content) {
+        return orderService.updateOrder(referenceId, Integer.parseInt(content));
+    }
+
+    @RequestMapping(value = "/{username}", method = RequestMethod.GET, produces = "application/json")
     public List<OrderDTO> getCustomerOrders(@PathVariable String username) {
         return orderService.getCustomerOrders(username);
     }
@@ -30,6 +35,6 @@ public class OrderController {
     @ExceptionHandler(CustomerNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity customerDoesNotExist() {
-        return new ResponseEntity(new EmptyJsonResponse(), HttpStatus.OK);
+        return new ResponseEntity<>(new EmptyJsonResponse(), HttpStatus.OK);
     }
 }

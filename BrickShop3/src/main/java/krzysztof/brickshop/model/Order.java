@@ -3,6 +3,7 @@ package krzysztof.brickshop.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 
@@ -14,10 +15,12 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @Setter
     @Column(length = 140)
     private int brickCount;
     @Column
     private long creationDateTimestamp;
+
 
     @Column
     private String referenceId;

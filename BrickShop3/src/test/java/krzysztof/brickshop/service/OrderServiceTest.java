@@ -54,4 +54,19 @@ public class OrderServiceTest {
         assertThat(customerOrders.get(i).getBricksCount()).isEqualTo(brickCount);
         assertThat(customerOrders.get(i).getOrderReferenceId()).isEqualTo(orderReference);
     }
+
+    @Test
+    public void shouldUpdateOrder(){
+        //given
+        int brickCount1 = 100;
+        String orderReference1 = orderService.createOrder(USERNAME, brickCount1);
+        int expectedBrickCount = 400;
+
+        //when
+        orderService.updateOrder(orderReference1, expectedBrickCount);
+
+        //then
+        List<OrderDTO> customerOrders = orderService.getCustomerOrders(USERNAME);
+        assertOrder(customerOrders, expectedBrickCount, orderReference1, 0);
+    }
 }

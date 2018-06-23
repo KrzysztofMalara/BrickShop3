@@ -12,8 +12,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -105,5 +104,21 @@ public class OrderControllerTest {
                 .andExpect(jsonPath("$[1].bricksCount", is(brickCount4)));
     }
 
+    @Test
+    public void shouldUpdateOrder() throws Exception {
+        //given
+        int brickCount1 = 100;
+        MvcResult result1 = performCreateOrder(KRZYSZTOF, brickCount1);
+        int updatedBrickCount = 300;
+        String orderReferenceId1 = result1.getResponse().getContentAsString();
 
+        //when
+        mockMvc.perform(put("/orders/" + orderReferenceId1).content(Integer.toString(updatedBrickCount)))
+                .andDo(print()).andExpect(status().isOk());
+
+        //then
+        mockMvc.perform(get("/orders/" + KRZYSZTOF)).andDo(print()).andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].orderReferenceId", is(orderReferenceId1)))
+                .andExpect(jsonPath("$[0].bricksCount", is(updatedBrickCount)));
+    }
 }
