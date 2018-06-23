@@ -15,6 +15,7 @@ import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -66,6 +67,12 @@ public class OrderControllerTest {
                 .andExpect(jsonPath("$[0].bricksCount", is(brickCount1)))
                 .andExpect(jsonPath("$[1].orderReferenceId", is(orderReferenceId2)))
                 .andExpect(jsonPath("$[1].bricksCount", is(brickCount2)));
+    }
+
+    @Test
+    public void shouldReturnEmptyListForNotExistingUser() throws Exception {
+        mockMvc.perform(get(ORDERS_KRZYSZTOF)).andDo(print()).andExpect(status().isOk())
+                .andExpect(content().string("{}"));
     }
 
 
